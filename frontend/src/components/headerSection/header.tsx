@@ -54,7 +54,7 @@ export default class HeaderSection extends Component<HeaderProps, HeaderState>
                         return (
                             <div>
                                 <div className="community-message-card fullwidth">
-                                    <MessageCard key={1} object={{ messageID: 0, 
+                                    <MessageCard key={1} object={{ messageID: 0,
                                         orig_msg: "はあと様へ\n\n\
                                         私は今回の企画の主催者、シエウエイユエンと申します。\n\
                                         メンバーシップの参加は僅かの一ヶ月けど、毎回あなたが真剣に配信を準備し、企画を考える姿を見る度に、自然にこの子を応援したい気持ちになる。気づいたら、もうこの子のために本気で泣いたり笑ったり、どうしよも無くあなたの事が好きになっちゃった。\n\
@@ -66,7 +66,7 @@ export default class HeaderSection extends Component<HeaderProps, HeaderState>
                                         Although I have been joining your membership for only a month, every time I see you fully engaged in streams and plans, I couldn’t help but feel encouraged by your strong passion. Without consciousness, I eventually started to cry for your touching moments and feel truly-warmed when you look happy. \
                                         At the beginning, I was literally the only staff of this project. However, as time goes by, people started to gather in order to cheer you up and finally made this project become large. People from Spain, Germany and countries in east Asia have gave me countless helps so far. Probably people all around the world will gradually become willing to give you a hand once you show your passion and determination. \
                                         I believe it is also the same as a Vtuber. All participants of this project are moved by Haato-sama’s great efforts and came to support you! As we all can tell, your persistence and hard work make you the world-wide strongest idol without doubt!\
-                                        We have the second stage of our project so please look forward to it! We love you, Haato-sama!", 
+                                        We have the second stage of our project so please look forward to it! We love you, Haato-sama!",
                                         country: "TW", username: "Hsieh", }} cardStyleNum={1} language={language} />
                                 </div>
                                 <div style={{height: 50}}/>
