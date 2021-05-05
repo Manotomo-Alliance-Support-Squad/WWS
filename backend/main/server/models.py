@@ -121,3 +121,35 @@ class VideoSchema(ma.Schema):
     artistLink = fields.String(required=False)
     username = fields.String(required=True)
     title = fields.String(required=False)
+
+
+class MultiGallery(db.Model):
+    __tablename__ = 'MULTIGALLERY'
+    artworkID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    setID = db.Column(db.String(16), nullable=False)
+    artworkLink = db.Column(db.String(2048), nullable=False)
+    artistLink = db.Column(db.String(2048), nullable=True)
+    username = db.Column(db.String(64), nullable=True)
+    title = db.Column(db.String(64), nullable=True)
+
+    def __init__(
+            self,
+            artworkID,
+            setID,
+            artworkLink,
+            username,
+            title,
+            artistLink,
+    ):
+        self.artworkID = artworkID
+        self.setID = setID
+        self.artworkLink = artworkLink
+        self.artistLink = artistLink
+        self.username = username
+        self.title = title
+
+
+class MultiGallerySchema(ma.Schema):
+    setID = fields.Integer()
+    gallery = fields.List(fields.Nested(
+        lambda: GallerySchema()))
