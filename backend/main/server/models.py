@@ -123,6 +123,7 @@ class VideoSchema(ma.Schema):
     title = fields.String(required=False)
 
 
+# TODO add Message + translated message
 class MultiGallery(db.Model):
     __tablename__ = 'MULTIGALLERY'
     artworkID = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -149,6 +150,7 @@ class MultiGallery(db.Model):
         self.title = title
 
 
+# TODO add Message + translated message
 class MultiGallerySchema(ma.Schema):
     setID = fields.Integer()
     gallery = fields.List(fields.Nested(
