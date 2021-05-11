@@ -16,6 +16,23 @@ export interface ArtworkJson {
     title: string;
 }
 
+export interface MultiArtwork {
+    setID: string;
+    gallery: Artwork[];
+}
+
+export interface MultiArtworkJson {
+    setID: string;
+    gallery: Artwork[];
+    // gallery:Array<{
+    //     artworkID: number;
+    //     artworkLink: string;
+    //     artistLink: string;
+    //     username: string;
+    //     title: string;
+    // }>;
+}
+
 export function artworkFromJson(json: ArtworkJson): Artwork {
     const { artworkID, artworkLink, artistLink, username, title } = json;
     return {
@@ -37,3 +54,27 @@ export function artworkToJson(artwork: Artwork): ArtworkJson {
         title,
     }
 }
+
+export function multiArtworkFromJson(json: MultiArtworkJson): MultiArtwork {
+    const setID = json["setID"];
+    const jsonGallery = json["gallery"];
+    let artworkGallery: Artwork[] = [];
+    for (var art of jsonGallery) {
+        artworkGallery.push(art);
+    }
+    return {
+        setID,
+        gallery: artworkGallery,
+    }
+}
+
+// TODO: Does this need fixing...?
+export function multiArtworkToJson(artwork: MultiArtwork): MultiArtworkJson {
+    const setID = artwork.setID;
+    const gallery = artwork.gallery;
+    return {
+        setID,
+        gallery,
+    }
+}
+

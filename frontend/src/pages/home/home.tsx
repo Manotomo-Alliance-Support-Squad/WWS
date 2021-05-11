@@ -9,7 +9,7 @@ import SessionService from "../../services/session.service";
 import AnchorLink from 'react-anchor-link-smooth-scroll';
 import ArrowDropDownCircleOutlinedIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import {Announcement} from "../../models/announcement"
-import {Artwork} from "../../models/artwork"
+import {Artwork, MultiArtwork} from "../../models/artwork"
 import {Video} from "../../models/video"
 import './home.css';
 import '../../shared/globalStyles/global.css'
@@ -38,6 +38,7 @@ export interface HomePageState {
     messages: Message[];
     announcements: Announcement[];
     artworks: Artwork[];
+    multiArtworks: MultiArtwork[];
     videos: Video[];
 }
 
@@ -74,6 +75,7 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
         announcements: [],
         artworks: [],
         videos: [],
+        multiArtworks: [],
     }
 
     componentDidMount() {
@@ -102,6 +104,7 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
             .catch((error: Error) => {
                 console.error(error);
             });
+
         const cachedArtworks: Artwork[] | null = SessionService.getGallery();
         if (cachedArtworks && cachedArtworks.length) {
             this.setState({artloading: false, artworks: cachedArtworks});
@@ -115,6 +118,7 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
                     console.error(error);
                 })
         }
+
         const cachedVideos: Video[] | null = SessionService.getVideo();
         if (cachedVideos && cachedVideos.length) {
             this.setState({videos: cachedVideos});
@@ -123,6 +127,21 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
                 .then((videos: Video[]) => {
                     SessionService.saveVideo(videos);
                     this.setState({videos});
+                })
+                .catch((error: Error) => {
+                    console.error(error);
+                })
+        }
+
+        // Gallery with multiple images
+        const cachedMultiGallery: MultiArtwork[] | null = SessionService.getMultiGallery();
+        if (cachedMultiGallery && cachedMultiGallery.length) {
+            this.setState({multiArtworks: cachedMultiGallery});
+        } else {
+            this.manoAloeService.getMultiGallery()
+                .then((multiArtworks: MultiArtwork[]) => {
+                    SessionService.saveMultiGallery(multiArtworks);
+                    this.setState({multiArtworks});
                 })
                 .catch((error: Error) => {
                     console.error(error);
@@ -141,6 +160,8 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
     }
 
     compileCardData() {
+        console.log(this.state.multiArtworks)
+
         // We do this because state setting is async and trying to create this in getData yields empty arrays
         let comboCardData: (Message|Artwork|Video)[] = [];
         // TODO: This can should be more generalized, but generally there will be fewer art than messages
