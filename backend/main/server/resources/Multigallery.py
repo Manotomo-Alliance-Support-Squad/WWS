@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask import request
 from main.server import db, cache, app
-from main.server.models import MultiGallery, MultiGallerySchema
+from main.server.models import MultiGallery, MultiGallerySchema, SetMetadata, SetMetadataSchema
 from flask_jwt import jwt_required
 
 artwork_schema = MultiGallerySchema()
@@ -29,7 +29,7 @@ class MultiGalleryListResource(Resource):
     @cache.cached(timeout=100)
     def get(self):
         """Gets all Artwork on the server ordered by set id"""
-        multigallery = MultiGallery.query.all()
+        multigallery = db.session.query(MultiGallery, SetMetadata).join(SetMetadata).all()
 
         if not multigallery:
             return {
@@ -37,16 +37,18 @@ class MultiGalleryListResource(Resource):
                 'multigallery': {}
             }, 206  # Partial Content Served, the other status code never loads
 
-        # Create a map of {set_id: [art1, art2,...]}
+        # Create a map of {mdatadataID: {metadata: {}, gallery: [art1, art2,...]}}
         set_map = {}
-        for artwork in multigallery:
-            if artwork.setID not in set_map:
-                set_map[artwork.setID] = [artwork]
+        for arkwork, metadata in multigallery:
+            if metadata.setID not in set_map:
+                set_map[metadata.setID] = {
+                    "metadata": metadata, "gallery": [arkwork.artworkLink]
+                }
                 continue
-            set_map[artwork.setID].append(artwork)
+            set_map[metadata.setID]["gallery"].append(arkwork.artworkLink)
         gallery_list = [
-            {"setID": set_id, "gallery": artworks}
-            for set_id, artworks in set_map.items()
+            {"metadata": artworks["metadata"], "gallery": artworks["gallery"]}
+            for _, artworks in set_map.items()
         ]
 
         multigallery_json = gallery_schema.dump(gallery_list)

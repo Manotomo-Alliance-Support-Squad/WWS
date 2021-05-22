@@ -4,7 +4,7 @@ from flask_restful import Api
 from main.server.resources.Message import MessageListResource, MessageResource, MessageListRangeResource, MessageCount
 from main.server.resources.Game import GameCount, GameListResource
 from main.server.resources.Gallery import GalleryCount, GalleryListResource
-from main.server.resources.Multigallery import MultiGalleryCount, MultiGalleryListResource, MultiGalleryListAllResource
+from main.server.resources.Multigallery import MultiGalleryCount, MultiGalleryListResource
 from main.server.resources.Video import VideoCount, VideoListResource
 from main.server.resources.Announcement import AnnouncementListResource, AnnouncementCount
 

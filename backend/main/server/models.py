@@ -127,31 +127,57 @@ class VideoSchema(ma.Schema):
 class MultiGallery(db.Model):
     __tablename__ = 'MULTIGALLERY'
     artworkID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    setID = db.Column(db.String(16), nullable=False)
+    setID = db.Column(db.Integer, db.ForeignKey('SETMETADATA.setID'), nullable=False)
+    setmetadata = db.relationship("SetMetadata")
     artworkLink = db.Column(db.String(2048), nullable=False)
-    artistLink = db.Column(db.String(2048), nullable=True)
-    username = db.Column(db.String(64), nullable=True)
-    title = db.Column(db.String(64), nullable=True)
 
     def __init__(
             self,
             artworkID,
             setID,
             artworkLink,
-            username,
-            title,
-            artistLink,
     ):
         self.artworkID = artworkID
         self.setID = setID
         self.artworkLink = artworkLink
+
+
+class SetMetadata(db.Model):
+    __tablename__ = 'SETMETADATA'
+    metadataID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    setID = db.Column(db.String(32), nullable=False)
+    artistLink = db.Column(db.String(2048), nullable=True)
+    username = db.Column(db.String(64), nullable=True)
+    title = db.Column(db.String(64), nullable=True)
+
+    def __init__(
+            self,
+            metadataID,
+            setID,
+            username,
+            title,
+            artistLink,
+    ):
+        self.metadataID = metadataID
+        self.setID = setID
         self.artistLink = artistLink
         self.username = username
         self.title = title
 
+# TODO write setmetadata model
 
-# TODO add Message + translated message
+
+# TODO: Write an incoming multigallery schema for validation purposes
+
+
+class SetMetadataSchema(ma.Schema):
+    metadataID = fields.Integer()
+    setID = fields.String(required=False)
+    artistLink = fields.String(required=False)
+    username = fields.String(required=True)
+    title = fields.String(required=False)
+
+
 class MultiGallerySchema(ma.Schema):
-    setID = fields.Integer()
-    gallery = fields.List(fields.Nested(
-        lambda: GallerySchema()))
+    metadata = fields.Nested(SetMetadataSchema)
+    gallery = fields.List(fields.String(required=True))
