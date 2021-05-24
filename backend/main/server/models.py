@@ -133,11 +133,9 @@ class MultiGallery(db.Model):
 
     def __init__(
             self,
-            artworkID,
             setID,
             artworkLink,
     ):
-        self.artworkID = artworkID
         self.setID = setID
         self.artworkLink = artworkLink
 
@@ -147,37 +145,40 @@ class SetMetadata(db.Model):
     metadataID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     setID = db.Column(db.String(32), nullable=False)
     artistLink = db.Column(db.String(2048), nullable=True)
-    username = db.Column(db.String(64), nullable=True)
+    username = db.Column(db.String(64), nullable=False)
     title = db.Column(db.String(64), nullable=True)
 
     def __init__(
             self,
-            metadataID,
             setID,
             username,
             title,
             artistLink,
     ):
-        self.metadataID = metadataID
         self.setID = setID
         self.artistLink = artistLink
         self.username = username
         self.title = title
 
-# TODO write setmetadata model
-
-
-# TODO: Write an incoming multigallery schema for validation purposes
-
 
 class SetMetadataSchema(ma.Schema):
     metadataID = fields.Integer()
-    setID = fields.String(required=False)
+    setID = fields.String(required=True)
     artistLink = fields.String(required=False)
     username = fields.String(required=True)
     title = fields.String(required=False)
 
 
 class MultiGallerySchema(ma.Schema):
+    artworkID = fields.Integer()
     metadata = fields.Nested(SetMetadataSchema)
     gallery = fields.List(fields.String(required=True))
+
+
+class MultiGalleryImportSchema(ma.Schema):
+    metadataID = fields.Integer()
+    setID = fields.String(required=True)
+    artworkLink = fields.String(required=True)
+    artistLink = fields.String(required=False)
+    username = fields.String(required=True)
+    title = fields.String(required=False)

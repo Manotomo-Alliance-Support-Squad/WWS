@@ -1,10 +1,10 @@
 from flask_restful import Resource
 from flask import request
 from main.server import db, cache, app
-from main.server.models import MultiGallery, MultiGallerySchema, SetMetadata, SetMetadataSchema
+from main.server.models import MultiGallery, MultiGallerySchema, MultiGalleryImportSchema, SetMetadata, SetMetadataSchema
 from flask_jwt import jwt_required
 
-artwork_schema = MultiGallerySchema()
+artwork_schema = MultiGalleryImportSchema()
 gallery_schema = MultiGallerySchema(many=True)
 
 
@@ -57,35 +57,40 @@ class MultiGalleryListResource(Resource):
     @jwt_required()
     def post(self):
         """Add Artwork"""
+        # Checking data and validation
         json_data = request.get_json(force=True)
-
         if not json_data:
             return {'status': 'fail', 'message': 'No input data'}, 400
-
         errors = artwork_schema.validate(json_data)
-
         if errors:
             return {'status': 'fail', 'message': 'Error handling request'}, 422
 
+        # Confirm and create db entires to be added
         data = artwork_schema.load(json_data)
+        if not SetMetadata.query.filter_by(setID=data.get('setID')).first():
+            metadata_entry = SetMetadata(
+                setId=data.get('setId'),
+                artistLink=data.get('artistLink'),
+                username=data.get('username'),
+                title=data.get('title'),
+            )
+            db.session.add(metadata_entry)
+            metadata_return_message = ''
+        else:
+            metadata_return_message = '; metadata already exists so operation skipped'
 
-        entry = MultiGallery.query.filter_by(
-            artworkLink=data.get('artworkLink')).first()
-
-        if entry:
+        if not MultiGallery.query.filter_by(artworkLink=data.get('artworkLink')).first():
+            multigallery_entry = MultiGallery(
+                setID=data.get('setID'),
+                artworkLink=data.get('artworkLink'),
+            )
+            db.session.add(multigallery_entry)
+        else:
             return {'status': 'fail', 'message': 'Artwork already exists'}, 400
 
-        entry = MultiGallery(
-            setId=data.get('setId'),
-            artworkLink=data.get('artworkLink'),
-            artistLink=data.get('artistLink'),
-            username=data.get('username'),
-            title=data.get('title'))
-
-        db.session.add(entry)
+        # We don't commit until the end to prevent data pollution
         db.session.commit()
-
         return {
             'status': 'success',
-            'message': 'Artwork entry successfully created'
+            'message': f'Artwork entry successfully created{metadata_return_message}'
         }, 201
