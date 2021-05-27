@@ -16,21 +16,30 @@ export interface ArtworkJson {
     title: string;
 }
 
-export interface MultiArtwork {
+export interface ArtworkMetadata {
+    metadataID: number;
     setID: string;
-    gallery: Artwork[];
+    artistLink: ExternalLink;
+    username: string;
+    title: string;    
+}
+
+export interface ArtworkMetadataJson {
+    metadataID: number;
+    setID: string;
+    artistLink: string;
+    username: string;
+    title: string;    
+}
+
+export interface MultiArtwork {
+    metadata: ArtworkMetadata;
+    gallery: Array<string>;
 }
 
 export interface MultiArtworkJson {
-    setID: string;
-    gallery: Artwork[];
-    // gallery:Array<{
-    //     artworkID: number;
-    //     artworkLink: string;
-    //     artistLink: string;
-    //     username: string;
-    //     title: string;
-    // }>;
+    metadata: ArtworkMetadata;
+    gallery: Array<string>;
 }
 
 export function artworkFromJson(json: ArtworkJson): Artwork {
@@ -56,24 +65,18 @@ export function artworkToJson(artwork: Artwork): ArtworkJson {
 }
 
 export function multiArtworkFromJson(json: MultiArtworkJson): MultiArtwork {
-    const setID = json["setID"];
-    const jsonGallery = json["gallery"];
-    let artworkGallery: Artwork[] = [];
-    for (var art of jsonGallery) {
-        artworkGallery.push(art);
-    }
+    const { metadata, gallery } = json;
     return {
-        setID,
-        gallery: artworkGallery,
+        metadata,
+        gallery,
     }
 }
 
 // TODO: Does this need fixing...?
 export function multiArtworkToJson(artwork: MultiArtwork): MultiArtworkJson {
-    const setID = artwork.setID;
-    const gallery = artwork.gallery;
+    const { metadata, gallery } = artwork;
     return {
-        setID,
+        metadata,
         gallery,
     }
 }
