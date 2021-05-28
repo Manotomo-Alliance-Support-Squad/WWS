@@ -50,7 +50,6 @@ export default class MultiArtworkCard extends BaseCard<MultiArtwork, MultiArtwor
 
     private setImage() {
         if (this.state.loadingState === ImageLoadingState.NotLoaded) {
-            // TODO: we need to iterate though this
             this.imageElement.src = this.artworks[0];
             this.imageElement.addEventListener("load", this.imageLoaded);
 
@@ -70,13 +69,15 @@ export default class MultiArtworkCard extends BaseCard<MultiArtwork, MultiArtwor
 
     renderArtwork() {
         const hasLoaded = this.state.loadingState === ImageLoadingState.Loaded;
-        // TODO: we need to iterate though this
-        const artworkLink = this.artworks[0];
         const artistLink = this.metadata.artistLink ? linkToString(this.metadata.artistLink) : "#no_artist_link";
 
         return (
             <div className="artwork-card">
-                <img className="artwork-card-img" src={artworkLink} alt={this.metadata.title} />
+                {this.artworks.map((obj, idx) => {
+                    return (
+                        <img className="artwork-card-img" src={obj} alt={this.metadata.title} />
+                    );
+                })}
                 <div className="artwork-card-footer">
                     <div className="title">{this.metadata.title}</div>
                     <p>
