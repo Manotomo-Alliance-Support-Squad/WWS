@@ -149,7 +149,7 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
         }
     }
 
-    renderCardSection(data: (Message|Artwork|Video)[]) {
+    renderCardSection(data: (Message|Artwork|Video|MultiArtwork)[]) {
         return (
             <div>
                 <div className="wrapper-overlay">
@@ -160,17 +160,20 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
     }
 
     compileCardData() {
-        console.log(this.state.multiArtworks)
 
         // We do this because state setting is async and trying to create this in getData yields empty arrays
-        let comboCardData: (Message|Artwork|Video)[] = [];
+        let comboCardData: (Message|Artwork|Video|MultiArtwork)[] = [];
         // TODO: This can should be more generalized, but generally there will be fewer art than messages
         const art_cards_length = this.state.artworks.length;
         const message_cards_length = this.state.messages.length;
         const video_cards_length = this.state.videos.length;
+        const multi_art_cards_length = this.state.multiArtworks.length;
         const index_increment_spacing = Math.floor(message_cards_length/art_cards_length);
 
-        for (let msg_index = 0, art_index = 0, video_index = 0; msg_index < message_cards_length; msg_index++) {
+        for (let multi_art_index = 0; multi_art_index < multi_art_cards_length; multi_art_index++) {
+            comboCardData.push(this.state.multiArtworks[multi_art_index]);
+        }
+        for (let msg_index = 0, art_index = 0, video_index = 0, multi_art_index = 0; msg_index < message_cards_length; msg_index++) {
             comboCardData.push(this.state.messages[msg_index]);
             if (art_index < art_cards_length && msg_index % index_increment_spacing === 0) {
                 comboCardData.push(this.state.artworks[art_index]);
