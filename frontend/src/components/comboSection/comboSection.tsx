@@ -22,7 +22,6 @@ interface ComboSectionState extends BaseSectionState {
 export default class ComboSection extends BaseSection<Message|Artwork|Video|MultiArtwork> {
 
     renderCard(object: (Message|Artwork|Video|MultiArtwork), cardStyleNum: number, language: DisplayedLanguage, id: number): JSX.Element {
-        // TODO: messagecard-center might not used or needed
         if ("messageID" in object) {
             return (
                 <div className="card-section">
