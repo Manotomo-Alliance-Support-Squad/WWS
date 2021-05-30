@@ -1,4 +1,5 @@
 import React from 'react';
+import seedrandom from 'seedrandom';
 import ComboSection from '../../components/comboSection/comboSection';
 import MessageSection from '../../components/messageSection/messageSection';
 import ArchiveSection from '../../components/archiveSection/archiveSection';
@@ -159,32 +160,55 @@ export default class HomePage extends React.Component<HomePageProps, HomePageSta
         )
     }
 
+    randomizeArrayWithSeed(unshuffled_arr: any[], seed: string) {
+        let rng = seedrandom(seed);
+        // Schwartzian transform
+        return unshuffled_arr
+            .map((a) => ({sort: rng(), value: a}))
+            .sort((a, b) => a.sort - b.sort)
+            .map((a) => a.value);
+    }
+
+    // We do this because state setting is async and trying to create this in getData yields empty arrays
     compileCardData() {
-
-        // We do this because state setting is async and trying to create this in getData yields empty arrays
         let comboCardData: (Message|Artwork|Video|MultiArtwork)[] = [];
-        // TODO: This can should be more generalized, but generally there will be fewer art than messages
-        const art_cards_length = this.state.artworks.length;
-        const message_cards_length = this.state.messages.length;
-        const video_cards_length = this.state.videos.length;
-        const multi_art_cards_length = this.state.multiArtworks.length;
-        const index_increment_spacing = Math.floor(message_cards_length/art_cards_length);
+        let main_content_array: any[] = [];
+        let sub_content_array: any[] = [];
+        let multimedia_count: number = this.state.artworks.length + this.state.videos.length + this.state.multiArtworks.length
+        let index_increment_spacing: number;
+        
+        // The higher count of the two types of content gets to determine the sprinkling of the type of content
+        if (multimedia_count > this.state.messages.length) {
+            main_content_array = this.randomizeArrayWithSeed(
+                main_content_array.concat(this.state.multiArtworks, this.state.artworks, this.state.videos),
+                "manotomo",
+            );
+            // TODO: create a randomly seeded version of the main content array
+            sub_content_array = this.state.messages;
+            
+            index_increment_spacing = Math.floor(multimedia_count / this.state.messages.length);
+        } else {
+            main_content_array = this.state.messages;
+            sub_content_array = this.randomizeArrayWithSeed(
+                sub_content_array.concat(this.state.multiArtworks, this.state.artworks, this.state.videos),
+                "manotomo",
+            );
 
-        for (let multi_art_index = 0; multi_art_index < multi_art_cards_length; multi_art_index++) {
-            comboCardData.push(this.state.multiArtworks[multi_art_index]);
+            index_increment_spacing = Math.floor(this.state.messages.length / multimedia_count);
         }
-        for (let msg_index = 0, art_index = 0, video_index = 0, multi_art_index = 0; msg_index < message_cards_length; msg_index++) {
-            comboCardData.push(this.state.messages[msg_index]);
-            if (art_index < art_cards_length && msg_index % index_increment_spacing === 0) {
-                comboCardData.push(this.state.artworks[art_index]);
-                art_index++;
-                // Hack this in...
-                if (video_index < video_cards_length) {
-                    comboCardData.push(this.state.videos[video_index]);
-                    video_index++;
-                }
+
+        // Main content is the type of content we have more of
+        for (
+                let main_content_index = 0, sub_content_index = 0;
+                main_content_index < main_content_array.length;
+                main_content_index++) {
+            comboCardData.push(main_content_array[main_content_index]);
+            if (main_content_index % index_increment_spacing === 0 && sub_content_index < sub_content_array.length) {
+                comboCardData.push(sub_content_array[sub_content_index]);
+                sub_content_index++;
             }
         }
+
         return comboCardData
     }
 
